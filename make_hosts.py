@@ -5,12 +5,11 @@ Only hosts with both DEVICE ID and IP ADDRESS will be written to hosts file. If 
  mising data, that row will be ignored.
 '''
 # pandas is a python data analysis and manipulation library - https://pandas.pydata.org/
-import pandas, sys, os, time, subprocess
+import pandas, sys, os, time
 from datetime import datetime
 from pathlib import Path
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
-import shutil
 
 # Open a filepicker dialog:
 Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
@@ -20,26 +19,10 @@ print(str(ip_doc_source) + '\\')
 # make a local copy of the document so we don't error 😬
 ip_doc_temp = str(Path.home()) + '\\ip_doc_temp.xlsx'
 print(f'IP doc temp location: {ip_doc_temp}')
-# before we do this, we need to change the Windows environment variable COMSPEC to use powershell instead of cmd. because fuckin windows:
-# save the existing value of COMSPEC:
-# saved_comspec = os.getenv('COMSPEC')
-# # change COMSPEC to point to powershell:
-# print(f'Existing COMSPEC is {saved_comspec}.')
-# os.putenv('COMSPEC', 'C:\\Windows\\System32\\WindowsPowerShell\v1.0\\powershell.exe')
-# print(f'New COMSPEC is {os.getenv("COMSPEC")}')
-# # restore COMSPEC:
-# os.putenv('COMSPEC', saved_comspec)
-
 try:
-	#copyfile(ip_doc_source, ip_doc_temp)
-	#print('Y U no copy?!')
 	command = f'powershell.exe copy \\"{ip_doc_source}\\" "{ip_doc_temp}"'
-	# powershell.exe copy \"C:/Users/jmusarra/4Wall Entertainment/4Wall Systems - S80141 - MSG Sphere/Tech/hosts_test/IP_document.xlsx\" C:\Users\jmusarra\ip_doc_temp.xlsx
 	print(command)
-	#subprocess.call(command, shell = True)
 	os.system(command)
-	#print('blah blah')		
-	#print(ip_doc_temp)
 except PermissionError:
 	print("oh goddamnit")
 
@@ -72,12 +55,8 @@ faff = '''
 
 
 '''
-# make a local copy of the document
-
+# make a local copy of the document :
 destination_file = "C:\\Windows\\System32\\drivers\\etc\\hosts"
-# homedir = str(Path.home())
-# # select the Excel file to use for input:
-# ip_doc = Path(homedir + '\\ip_doc.xlsx')
 exists = os.path.isfile(ip_doc_temp)
 if exists:
 	with pandas.ExcelFile(ip_doc_temp):
@@ -115,6 +94,7 @@ with open(destination_file, 'w') as f:
 
 print(f"Hosts file generation complete. Written to {destination_file}.")
 print("Removing temporary files")
+
 # clean up temporary file 😬
 os.remove(ip_doc_temp)
 time.sleep(10)
