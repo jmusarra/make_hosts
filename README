@@ -1,0 +1,6 @@
+README
+
+This generates hosts files from a spreadsheet. The only constraints are that the spreadsheet needs columns named "IP ADDRESS" and "DEVICE ID".
+All other columns will be ignored, and rows that have blank cells in either of those two columns will be ignored.
+
+I feel like maybe Pandas is a bit heavy for this task, but holy shit it was so much faster to use than my first try (using openpyxl.
