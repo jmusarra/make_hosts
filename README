@@ -1,6 +1,14 @@
 README
 
-This generates hosts files from a spreadsheet. The only constraints are that the spreadsheet needs columns named "IP ADDRESS" and "DEVICE ID".
-All other columns will be ignored, and rows that have blank cells in either of those two columns will be ignored.
+This generates a host file from a spreadsheet. The only constraints are that 
+the spreadsheet needs sheets named "ARCH_LTG IP", "PROD_LTG IP", and 
+"ARCH_CTRL IP", and those sheets must have columns named "IP ADDRESS" and 
+"DEVICE ID".
+All other columns will be ignored, and rows that have blank cells in either of 
+those two columns will be ignored.
+This will OVERWRITE any existing hosts files! If you want to make edits, you 
+can do that in the spreadsheet and re-run, or do it in a text editor (notepad) 
+or the Powertoys 'Hosts File Editor': 
+https://learn.microsoft.com/en-us/windows/powertoys/hosts-file-editor
 
 I feel like maybe Pandas is a bit heavy for this task, but holy shit it was so much faster to use than my first try (using openpyxl.
