@@ -64,7 +64,7 @@ if exists:
 	    print('Reticulating splines...')
 	    arch_ltg_ip = pandas.read_excel(ip_doc_temp, sheet_name = "ARCH_LTG IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
 	    prod_ltg_ip = pandas.read_excel(ip_doc_temp, sheet_name = "PROD_LTG IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
-	    prod_ltg_ip = pandas.read_excel(ip_doc_temp, sheet_name = "ARCH_CTRL IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
+	    arch_ctrl_ip = pandas.read_excel(ip_doc_temp, sheet_name = "ARCH_CTRL IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
 	    print('Done.')
 else:
 	sys.exit("Could not find IP document. Exiting.")
@@ -72,11 +72,17 @@ else:
 # rearrange columns as needed for hosts file order:
 print("Reordering columns...")
 arch_ltg_ip = arch_ltg_ip[['IP ADDRESS', 'DEVICE ID']]
+prod_ltg_ip = prod_ltg_ip[['IP ADDRESS', 'DEVICE ID']]
+arch_ctrl_ip = arch_ctrl_ip[['IP ADDRESS', 'DEVICE ID']]
 print('Done.')
 
 # strip whitespace:
 arch_ltg_ip['DEVICE ID'] = arch_ltg_ip['DEVICE ID'].str.replace(' ', '')
 arch_ltg_ip['IP ADDRESS'] = arch_ltg_ip['IP ADDRESS'].str.replace(' ', '')
+prod_ltg_ip['DEVICE ID'] = prod_ltg_ip['DEVICE_ID'].str.replace(' ', '')
+prod_ltg_ip['IP ADDRESS'] = prod_ltg_ip['IP ADDRESS'].str.replace(' ', '')
+a['DEVICE ID'] = prod_ltg_ip['DEVICE_ID'].str.replace(' ', '')
+prod_ltg_ip['DEVICE ID'] = prod_ltg_ip['DEVICE_ID'].str.replace(' ', '')
 
 # drop all rows without hostname:
 print('Dropping incomplete rows...')
