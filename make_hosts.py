@@ -22,11 +22,18 @@ if os.path.isfile(ip_doc_source):
 # make a local copy of the document so we don't error 😬
 ip_doc_temp = str(Path.home()) + '\\ip_doc_temp.xlsx'
 command_escaped = f'powershell.exe copy \\"{ip_doc_source}\\" "{ip_doc_temp}"'
-command_unescaped = f'powershell.exe copy "{ip_doc_source}" "{ip_doc_temp}"'
+#command_unescaped = f'powershell.exe copy "{ip_doc_source}" "{ip_doc_temp}"'
 try:
-	#powershell.exe copy \"C:\Users\jmusarra\ip_doc.xlsx\" "C:\Users\jmusarra\ip_doc_temp.xlsx"
-	print(command_escaped)
-	os.system(command)
+    #powershell.exe copy \"C:\Users\jmusarra\ip_doc.xlsx\" "C:\Users\jmusarra\ip_doc_temp.xlsx"
+    #we'll try the escaped filenames first:
+    print(f'intended temp file: {ip_doc_temp}')
+    os.system(command_escaped)
+    if os.path.isfile(ip_doc_temp):
+        print(command_escaped)
+        print('Great, command_escaped worked. Moving on.')
+    else:
+        print('Plan B!')
+        #os.system(command_unescaped)
 except PermissionError:
 	print("oh goddamnit")
 if os.path.isfile(ip_doc_temp):
@@ -77,24 +84,25 @@ if os.path.isfile(ip_doc_temp):
         # TODO: check if the worksheets exist first
         available_sheets = []
         if 'ARCH_LTG IP' in sheets:
-        	print('yup')
+        	print('arch_ltg ip')
         	arch_ltg_ip = pandas.read_excel(ip_doc_temp, sheet_name = "ARCH_LTG IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
-        	available_sheets.append('arch_ltg_ip')
+        	available_sheets.append(arch_ltg_ip)
         else:
         	print('nope')
         if 'PROD_LTG IP' in sheets:
-        	print('yup')
+        	print('prod_ltg ip')
         	prod_ltg_ip = pandas.read_excel(ip_doc_temp, sheet_name = "PROD_LTG IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
-        	available_sheets.append('prod_ltg_ip')
+        	available_sheets.append(prod_ltg_ip)
         else:
         	print('nope')
         if 'ARCH_CTRL IP' in sheets:
-        	print('yup')
+        	print('arch_ctrl ip')
         	arch_ctrl_ip = pandas.read_excel(ip_doc_temp, sheet_name = "ARCH_CTRL IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
-        	available_sheets.append('arch_ctrl_ip')
+        	available_sheets.append(arch_ctrl_ip)
         else:
         	print('nope')
-        print(f'Available sheets are: {available_sheets}.')
+        print(type(available_sheets))
+        print(f'Available sheets are: {str(available_sheets)}.')
         merged_frames = pandas.concat(available_sheets)
         print('Done.')
 else:
