@@ -27,7 +27,6 @@ except PermissionError:
 	print("oh goddamnit")
 
 # windows boilerplate:
-
 faff = '''
 # Copyright (c) 1993-2009 Microsoft Corp.
 #
@@ -65,7 +64,7 @@ if exists:
 	    print('Reticulating splines...')
 	    arch_ltg_ip = pandas.read_excel(ip_doc_temp, sheet_name = "ARCH_LTG IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
 	    prod_ltg_ip = pandas.read_excel(ip_doc_temp, sheet_name = "PROD_LTG IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
-	    prod_ltg_ip = pandas.read_excel(ip_doc_temp, sheet_name = "ARCH_CTRL IP", header = 4, index_col = None, usecols = ['DEVICE_ID', 'IP_ADDRESS'])
+	    prod_ltg_ip = pandas.read_excel(ip_doc_temp, sheet_name = "ARCH_CTRL IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
 	    print('Done.')
 else:
 	sys.exit("Could not find IP document. Exiting.")
