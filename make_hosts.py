@@ -19,21 +19,17 @@ if os.path.isfile(ip_doc_source):
     print('yup we see it')
     print(f'Using source file: {str(ip_doc_source)}')
 
-# make a local copy of the document so we don't error 😬
+# make a local copy of the document so we're not trying to work with an active document
 ip_doc_temp = str(Path.home()) + '\\ip_doc_temp.xlsx'
 command_escaped = f'powershell.exe copy \\"{ip_doc_source}\\" "{ip_doc_temp}"'
-#command_unescaped = f'powershell.exe copy "{ip_doc_source}" "{ip_doc_temp}"'
 try:
     #powershell.exe copy \"C:\Users\jmusarra\ip_doc.xlsx\" "C:\Users\jmusarra\ip_doc_temp.xlsx"
-    #we'll try the escaped filenames first:
-    print(f'intended temp file: {ip_doc_temp}')
     os.system(command_escaped)
     if os.path.isfile(ip_doc_temp):
         print(command_escaped)
-        print('Great, command_escaped worked. Moving on.')
+        print('Great, copy sucesful. Moving on.')
     else:
-        print('Plan B!')
-        #os.system(command_unescaped)
+        print('Copy failed somehow wtf')
 except PermissionError:
 	print("oh goddamnit")
 if os.path.isfile(ip_doc_temp):
@@ -72,7 +68,6 @@ faff = '''
 
 # make a local copy of the document :
 destination_file = "C:\\Windows\\System32\\drivers\\etc\\hosts"
-#exists = os.path.isfile(ip_doc_temp)
 if os.path.isfile(ip_doc_temp):
     with pandas.ExcelFile(ip_doc_temp) as file:
         print(f'Document found: {ip_doc_temp}.')
@@ -83,6 +78,7 @@ if os.path.isfile(ip_doc_temp):
         print('Reticulating splines...')
         # TODO: check if the worksheets exist first
         available_sheets = []
+        # hm I could do this as a for... available_sheets[0]...        
         if 'ARCH_LTG IP' in sheets:
         	print('arch_ltg ip')
         	arch_ltg_ip = pandas.read_excel(ip_doc_temp, sheet_name = "ARCH_LTG IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
@@ -101,8 +97,6 @@ if os.path.isfile(ip_doc_temp):
         	available_sheets.append(arch_ctrl_ip)
         else:
         	print('nope')
-        print(type(available_sheets))
-        print(f'Available sheets are: {str(available_sheets)}.')
         merged_frames = pandas.concat(available_sheets)
         print('Done.')
 else:
@@ -117,7 +111,7 @@ print('Done.')
 merged_frames['DEVICE ID'] = merged_frames['DEVICE ID'].str.replace(' ', '')
 merged_frames['IP ADDRESS'] = merged_frames['IP ADDRESS'].str.replace(' ', '')
 
-# drop all rows without hostname:
+# drop all rows that are missing either hostname or IP:
 print('Dropping incomplete rows...')
 merged_frames.dropna(how = 'any', inplace = True)
 print('Done')
