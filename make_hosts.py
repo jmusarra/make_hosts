@@ -21,6 +21,14 @@ if os.path.isfile(ip_doc_source):
 
 # make a local copy of the document so we're not trying to work with an active document
 ip_doc_temp = str(Path.home()) + '\\ip_doc_temp.xlsx'
+# just in case there's an old temp file hanging out, remove it:
+if os.path.isfile(ip_doc_temp):
+	print('old temp file found, removing')
+	os.remove(ip_doc_temp)
+elif os.path.isdir(ip_doc_temp):
+    print("old temp file found, except it's a directory. Removing.")
+    os.rmdir(ip_doc_temp)
+
 command_escaped = f'powershell.exe copy \\"{ip_doc_source}\\" "{ip_doc_temp}"'
 try:
     #powershell.exe copy \"C:\Users\jmusarra\ip_doc.xlsx\" "C:\Users\jmusarra\ip_doc_temp.xlsx"
@@ -97,6 +105,7 @@ if os.path.isfile(ip_doc_temp):
         	available_sheets.append(arch_ctrl_ip)
         else:
         	print('nope')
+        # merge each of the individual dataframes into a complete dataframe:
         merged_frames = pandas.concat(available_sheets)
         print('Done.')
 else:
