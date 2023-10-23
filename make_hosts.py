@@ -12,7 +12,6 @@ from pathlib import Path
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 
-
 hosts_file = 'C:\\Windows\\System32\\drivers\\etc\\hosts'
 # Open a filepicker dialog:
 Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
@@ -30,6 +29,24 @@ print(backup_command)
 windows_result = os.system(backup_command)
 print(f'Powershell says: {windows_result}')
 if windows_result == 1:
+	# TODO Make this ask for an ok before proceeding without backup
+	question = input(''' This script is running without administrator privileges. Therefore it cannot create a new file
+	inside the Windows\\System32\\drivers\\etc directory. You can proceed by overwriting the existing hosts file, or
+	create the backup somewhere we have write access to.
+	To skip making a backup, type 'S'
+	To make a backup in your home directory, type 'H'
+	To overwrite any existing hosts file, type 'O'
+	To make a backup in-place, type 'Q' to quit, and re-run as Administrator.
+	S, H, O, Q?''')
+	if question == 'S':
+		print('S!')
+	elif question == 'H':
+		print('H!')
+	elif question == 'O':
+		print('You have chosen to overwrite! WE ARE ALL DOOOOMED!!')
+	else:
+	    sys.exit('Exiting. To run as administrator, right-click and select "Run as Adminstrtator"') 
+
 	print('Windows copy command exited abmormally, possibly due to a PermissionDenied error. Try running as administrator')
 	time.sleep(3)
 if os.path.isfile(hosts_file_backup):
