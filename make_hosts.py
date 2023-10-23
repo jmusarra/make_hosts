@@ -23,7 +23,10 @@ HOSTS_FILE = 'C:\\Windows\\System32\\drivers\\etc\\hosts'
 hosts_file_backup_location = f'{Path.home()}\\hosts-backup'
 # Open a filepicker dialog:
 Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
-ip_doc_source = Path(askopenfilename(title = "IP Document location", filetypes=[("Excel files", ".xlsx .xls")]))
+ip_doc_source = Path(askopenfilename(
+	                                 title = "IP Document location",
+	                                 filetypes=[("Excel files", ".xlsx .xls")])
+                                     )
 if ip_doc_source == Path('.'):
     sys.exit('No source document slected. Exiting')
 #escape the quotes in the filename:
@@ -53,7 +56,6 @@ backup somewhere we have write access to.
         print('You have chosen to overwrite! WE ARE ALL DOOOOMED!!')
     else:
         sys.exit('Exiting. To run as administrator, right-click and select "Run as Administrator"')
-        #sys.exit("\nWe are not going to overwrite a file without user's explicit consent. Exiting.")
     time.sleep(3)
 if os.path.isfile(hosts_file_backup):
     print(f'Existing hosts file backed up at {hosts_file_backup}')
@@ -70,7 +72,7 @@ elif os.path.isdir(IP_DOC_TEMP):
 
 command_escaped = f'powershell.exe copy \\"{ip_doc_source}\\" "{IP_DOC_TEMP}"'
 try:
-    #powershell.exe copy \"C:\Users\jmusarra\ip_doc.xlsx\" "C:\Users\jmusarra\ip_doc_temp.xlsx" - for reference
+    #powershell copy \"C:\Users\jmusarra\ip_doc.xlsx\" "C:\Users\jmusarra\ip_doc_temp.xlsx"
     os.system(command_escaped)
     if os.path.isfile(IP_DOC_TEMP):
         print(command_escaped)
@@ -125,19 +127,37 @@ if os.path.isfile(IP_DOC_TEMP):
         available_sheets = []
         if 'ARCH_LTG IP' in sheets:
             print('found ARCH_LTG IP')
-            arch_ltg_ip = pandas.read_excel(IP_DOC_TEMP, sheet_name = "ARCH_LTG IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
+            arch_ltg_ip = (
+            	           pandas.read_excel(IP_DOC_TEMP,
+            	           sheet_name = "ARCH_LTG IP",
+            	           header = 4,
+            	           index_col = None,
+            	           usecols = ['DEVICE ID', 'IP ADDRESS'])
+            	           )
             available_sheets.append(arch_ltg_ip)
         else:
             print('nope')
         if 'PROD_LTG IP' in sheets:
             print('found PROD_LTG IP')
-            prod_ltg_ip = pandas.read_excel(IP_DOC_TEMP, sheet_name = "PROD_LTG IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
+            prod_ltg_ip = (
+            	           pandas.read_excel(IP_DOC_TEMP,
+            	           sheet_name = "PROD_LTG IP",
+            	           header = 4,
+            	           index_col = None,
+            	           usecols = ['DEVICE ID', 'IP ADDRESS'])
+            	           )
             available_sheets.append(prod_ltg_ip)
         else:
             print('nope')
         if 'ARCH_CTRL IP' in sheets:
             print('found ARCH_CTRL IP')
-            arch_ctrl_ip = pandas.read_excel(IP_DOC_TEMP, sheet_name = "ARCH_CTRL IP", header = 4, index_col = None, usecols = ['DEVICE ID', 'IP ADDRESS'])
+            arch_ctrl_ip = (
+            	            pandas.read_excel(IP_DOC_TEMP,
+            	            sheet_name = "ARCH_CTRL IP",
+            	            header = 4,
+            	            index_col = None,
+            	            usecols = ['DEVICE ID', 'IP ADDRESS'])
+            	            )
             available_sheets.append(arch_ctrl_ip)
         else:
             print('nope')
@@ -163,8 +183,13 @@ print('Done')
 num_devices = f'# Number of devices: {merged_frames.shape[0]}\n\n'
 
 with pandas.option_context('display.max_rows', None):
-#	hosts = merged_frames.apply(left_justify)
-    hosts = merged_frames.to_string(index = False, header = False, formatters = {'IP ADDRESS': (lambda x: '{:<9}'.format(x))}, justify='left')
+    formatters = {'IP ADDRESS': (lambda x: '{:<14}'.format(x)),
+                  'DEVICE ID': (lambda x: '{:<32}'.format(x))}
+    hosts = merged_frames.to_string(
+    	                            index = False,
+    	                            header = False,
+    	                            formatters = dict(formatters) #{'IP ADDRESS': (lambda x: '{:<14}'.format(x)), 'DEVICE ID': (lambda x: '{:<32}'.format(x))}
+    	                            )
 
 generated_date = f'# Date generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
 
@@ -173,8 +198,8 @@ with open(HOSTS_FILE, 'w', encoding='cp1252') as f:
     f.write(FAFF + generated_date + num_devices + hosts)
 
 print(f"Hosts file generation complete. Written to {HOSTS_FILE}.")
-print("Removing temporary files")
+print("Removing temporary files\n")
 
 # clean up temporary file 😬
 os.remove(IP_DOC_TEMP)
-time.sleep(10)
+time.sleep(6)
