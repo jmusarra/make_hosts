@@ -38,18 +38,23 @@ if os.path.isfile(ip_doc_source):
 HOSTS_FILE_BACKUP_LOCATION = 'C:\\Windows\\System32\\drivers\\etc\\'
 HOSTS_FILE_BACKUP_PATH = f'{HOSTS_FILE_BACKUP_LOCATION}hosts_backup-{datetime.now().strftime("%Y%m%d")}'
 #Try to backup to System32\etc\drivers
-def copy_with_powershell(source, destination):
-	print(f'Copying {source} to {destination}...')
-	exit_code = os.system(f'powershell.exe copy {source} {destination}')
-	return exit_code
 
-backup_command = f'powershell.exe copy {HOSTS_FILE_SOURCE} {HOSTS_FILE_BACKUP_PATH}'
-#print(backup_command)
-windows_result = os.system(backup_command)
-print(f'Powershell says: {windows_result}')
-if windows_result == 0:
+def copy_with_powershell(source, destination):
+    '''
+    copy source to destination using Powershell
+    '''
+    print(f'Copying {source} to {destination}...')
+    exit_code = os.system(f'powershell.exe copy {source} {destination}')
+    if exit_code == 1:
+        print('the copy did not worked')
+    elif exit_code == 0:
+        print('the copy did worked')
+    return exit_code
+
+result = copy_with_powershell(HOSTS_FILE_SOURCE, HOSTS_FILE_BACKUP_PATH)
+if result == 0:
     print('looks like it worked?')
-elif windows_result == 1:
+elif result == 1:
     question = input(''' This script is running without administrator privileges.
  Therefore it cannot create a new file inside the Windows\\System32\\drivers\\etc 
 directory. You can proceed by overwriting the existing hosts file, or create the 
@@ -62,16 +67,15 @@ backup somewhere we have write access to.
     	# write backup to homedir
         HOSTS_FILE_BACKUP_LOCATION = f'{Path.home()}\\'
         HOSTS_FILE_BACKUP_PATH = f'{HOSTS_FILE_BACKUP_LOCATION}hosts_backup-{datetime.now().strftime("%Y%m%d")}'
-        if copy_with_powershell(HOSTS_FILE_SOURCE, HOSTS_FILE_BACKUP_PATH) == 0:
-        	print('yay?')
+        copy_with_powershell(HOSTS_FILE_SOURCE, HOSTS_FILE_BACKUP_PATH)
     elif question == 'o':
     	# do not backup, overwrite original
-        print("You have chosen to overwrite! well, it's *your* data")
+        print("You have chosen to overwrite! Very well, it's your data.")
     else:
-        sys.exit('Exiting. To run as administrator, right-click and select "Run as Administrator"')
+        print('Exiting. To run as administrator, right-click and select "Run as Administrator"')
         time.sleep(3)
-else:
-	HOSTS_FILE_LOCATION = 'boo'
+        sys.exit()
+
 if os.path.isfile(HOSTS_FILE_BACKUP_PATH):
     print(f'Existing hosts file backed up at {HOSTS_FILE_BACKUP_PATH}')
 
