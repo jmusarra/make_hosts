@@ -16,6 +16,10 @@ hosts_file = 'C:\\Windows\\System32\\drivers\\etc\\hosts'
 # Open a filepicker dialog:
 Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
 ip_doc_source = Path(askopenfilename(title = "IP Document location", filetypes=[("Excel files", ".xlsx .xls")]))
+print(str(type(ip_doc_source)))
+print(ip_doc_source)
+if ip_doc_source == Path('.'):
+	sys.exit('No source document slected. Exiting')
 #escape the quotes in the filename:
 ip_doc_source = f'{ip_doc_source}"'
 if os.path.isfile(ip_doc_source):
@@ -33,21 +37,22 @@ if windows_result == 1:
 	question = input(''' This script is running without administrator privileges. Therefore it cannot create a new file
 	inside the Windows\\System32\\drivers\\etc directory. You can proceed by overwriting the existing hosts file, or
 	create the backup somewhere we have write access to.
-	To skip making a backup, type 'S'
-	To make a backup in your home directory, type 'H'
-	To overwrite any existing hosts file, type 'O'
-	To make a backup in-place, type 'Q' to quit, and re-run as Administrator.
-	S, H, O, Q?''')
-	if question == 'S':
+	To skip making a backup, type 's'
+	To make a backup in your home directory, type 'h'
+	To overwrite any existing hosts file, type 'o'
+	To make a backup in-place, type 'q' to quit, and re-run as Administrator.
+	s, h, o, q? \n''')
+	if question == 's':
 		print('S!')
-	elif question == 'H':
+	elif question == 'h':
 		print('H!')
-	elif question == 'O':
+	elif question == 'o':
 		print('You have chosen to overwrite! WE ARE ALL DOOOOMED!!')
 	else:
-	    sys.exit('Exiting. To run as administrator, right-click and select "Run as Adminstrtator"') 
+	    sys.exit('Exiting. To run as administrator, right-click and select "Run as Administrator"') 
 
 	print('Windows copy command exited abmormally, possibly due to a PermissionDenied error. Try running as administrator')
+	sys.exit("\nWe are not going to overwrite a file without user's explicit consent. Exiting.")
 	time.sleep(3)
 if os.path.isfile(hosts_file_backup):
 	print(f'Existing hosts file backed up at {hosts_file_backup}')
