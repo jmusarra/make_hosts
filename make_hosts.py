@@ -38,8 +38,13 @@ if os.path.isfile(ip_doc_source):
 HOSTS_FILE_BACKUP_LOCATION = 'C:\\Windows\\System32\\drivers\\etc\\'
 HOSTS_FILE_BACKUP_PATH = f'{HOSTS_FILE_BACKUP_LOCATION}hosts_backup-{datetime.now().strftime("%Y%m%d")}'
 #Try to backup to System32\etc\drivers
+def copy_with_powershell(source, destination):
+	print(f'Copying {source} to {destination}...')
+	exit_code = os.system(f'powershell.exe copy {source} {destination}')
+	return exit_code
+
 backup_command = f'powershell.exe copy {HOSTS_FILE_SOURCE} {HOSTS_FILE_BACKUP_PATH}'
-print(backup_command)
+#print(backup_command)
 windows_result = os.system(backup_command)
 print(f'Powershell says: {windows_result}')
 if windows_result == 0:
@@ -57,11 +62,8 @@ backup somewhere we have write access to.
     	# write backup to homedir
         HOSTS_FILE_BACKUP_LOCATION = f'{Path.home()}\\'
         HOSTS_FILE_BACKUP_PATH = f'{HOSTS_FILE_BACKUP_LOCATION}hosts_backup-{datetime.now().strftime("%Y%m%d")}'
-        print(f'Backing up to {HOSTS_FILE_BACKUP_PATH}')
-        backup_command = f'powershell.exe copy {HOSTS_FILE_SOURCE} {HOSTS_FILE_BACKUP_PATH}'
-        windows_result = os.system(backup_command)
-        if windows_result == 0:
-            print('and there was much rejoicing. Also functionize the copy part')
+        if copy_with_powershell(HOSTS_FILE_SOURCE, HOSTS_FILE_BACKUP_PATH) == 0:
+        	print('yay?')
     elif question == 'o':
     	# do not backup, overwrite original
         print("You have chosen to overwrite! well, it's *your* data")
