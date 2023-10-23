@@ -7,7 +7,6 @@ Only rows with both DEVICE ID and IP ADDRESS will be written to hosts file. If
 either of those columns are mising data, that row will be ignored.
 '''
 # pandas is a python data analysis and manipulation library - https://pandas.pydata.org/
-# TODO lint
 import sys
 import os
 import time
@@ -18,8 +17,7 @@ from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 import pandas
 
-
-HOSTS_FILE = 'C:\\Windows\\System32\\drivers\\etc\\hosts'
+HOSTS_FILE_SOURCE = 'C:\\Windows\\System32\\drivers\\etc\\hosts'
 hosts_file_backup_location = f'{Path.home()}\\hosts-backup'
 # Open a filepicker dialog:
 Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
@@ -35,30 +33,45 @@ if os.path.isfile(ip_doc_source):
     print('yes, that seems like a valid file')
     print(f'Using source file: {str(ip_doc_source)}')
 
+# this is becoming a horrible mess ☹️ and I'm making it worse and worse ☹️☹️☹️
 # TODO make a backup of the existing hosts file:
-hosts_file_backup = f'{HOSTS_FILE}_backup-{datetime.now().strftime("%Y%m%d")}'
-backup_command = f'powershell.exe copy {HOSTS_FILE} {hosts_file_backup}'
+HOSTS_FILE_BACKUP_LOCATION = 'C:\\Windows\\System32\\drivers\\etc\\'
+HOSTS_FILE_BACKUP_PATH = f'{HOSTS_FILE_BACKUP_LOCATION}hosts_backup-{datetime.now().strftime("%Y%m%d")}'
+#Try to backup to System32\etc\drivers
+backup_command = f'powershell.exe copy {HOSTS_FILE_SOURCE} {HOSTS_FILE_BACKUP_PATH}'
 print(backup_command)
 windows_result = os.system(backup_command)
 print(f'Powershell says: {windows_result}')
-if windows_result == 1:
-    question = input(f''' This script is running without administrator privileges.
+if windows_result == 0:
+    print('looks like it worked?')
+elif windows_result == 1:
+    question = input(''' This script is running without administrator privileges.
  Therefore it cannot create a new file inside the Windows\\System32\\drivers\\etc 
 directory. You can proceed by overwriting the existing hosts file, or create the 
 backup somewhere we have write access to.
     To overwrite any existing hosts file, type 'o'
-    To make a backup in {hosts_file_backup_location}, type 'h'
-    To make a backup in-place, type 'q' to quit, and re-run as Administrator.
+    To make a backup in C:\\Users\\<you>, type 'h'
+    To make a backup C:\\Windows\\System32\\drivers\\etc, type 'q' to quit, and re-run as Administrator.
     h, o, q? \n''')
     if question == 'h':
-        print('H!')
+    	# write backup to homedir
+        HOSTS_FILE_BACKUP_LOCATION = f'{Path.home()}\\'
+        HOSTS_FILE_BACKUP_PATH = f'{HOSTS_FILE_BACKUP_LOCATION}hosts_backup-{datetime.now().strftime("%Y%m%d")}'
+        print(f'Backing up to {HOSTS_FILE_BACKUP_PATH}')
+        backup_command = f'powershell.exe copy {HOSTS_FILE_SOURCE} {HOSTS_FILE_BACKUP_PATH}'
+        windows_result = os.system(backup_command)
+        if windows_result == 0:
+            print('and there was much rejoicing. Also functionize the copy part')
     elif question == 'o':
-        print('You have chosen to overwrite! WE ARE ALL DOOOOMED!!')
+    	# do not backup, overwrite original
+        print("You have chosen to overwrite! well, it's *your* data")
     else:
         sys.exit('Exiting. To run as administrator, right-click and select "Run as Administrator"')
-    time.sleep(3)
-if os.path.isfile(hosts_file_backup):
-    print(f'Existing hosts file backed up at {hosts_file_backup}')
+        time.sleep(3)
+else:
+	HOSTS_FILE_LOCATION = 'boo'
+if os.path.isfile(HOSTS_FILE_BACKUP_PATH):
+    print(f'Existing hosts file backed up at {HOSTS_FILE_BACKUP_PATH}')
 
 # make a local copy of the document so we're not trying to work with an active document:
 IP_DOC_TEMP = str(Path.home()) + '\\ip_doc_temp.xlsx'
@@ -183,21 +196,23 @@ print('Done')
 num_devices = f'# Number of devices: {merged_frames.shape[0]}\n\n'
 
 with pandas.option_context('display.max_rows', None):
+	# formatters make columns be left-justified
     formatters = {'IP ADDRESS': (lambda x: '{:<14}'.format(x)),
                   'DEVICE ID': (lambda x: '{:<32}'.format(x))}
     hosts = merged_frames.to_string(
     	                            index = False,
     	                            header = False,
-    	                            formatters = dict(formatters) #{'IP ADDRESS': (lambda x: '{:<14}'.format(x)), 'DEVICE ID': (lambda x: '{:<32}'.format(x))}
+    	                            formatters = dict(formatters)
     	                            )
 
 generated_date = f'# Date generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
 
+#overwriting existing hosts file; this should only happen if user selected 'o'
 print('Writing file....')
-with open(HOSTS_FILE, 'w', encoding='cp1252') as f:
+with open(HOSTS_FILE_SOURCE, 'w', encoding='cp1252') as f:
     f.write(FAFF + generated_date + num_devices + hosts)
 
-print(f"Hosts file generation complete. Written to {HOSTS_FILE}.")
+print(f"Hosts file generation complete. Written to {HOSTS_FILE_SOURCE}.")
 print("Removing temporary files\n")
 
 # clean up temporary file 😬
