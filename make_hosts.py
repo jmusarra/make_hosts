@@ -34,7 +34,6 @@ if os.path.isfile(ip_doc_source):
     print(f'Using source file: {str(ip_doc_source)}')
 
 # this is becoming a horrible mess ☹️ and I'm making it worse and worse ☹️☹️☹️
-# TODO make a backup of the existing hosts file:
 HOSTS_FILE_BACKUP_LOCATION = 'C:\\Windows\\System32\\drivers\\etc\\'
 HOSTS_FILE_BACKUP_PATH = f'{HOSTS_FILE_BACKUP_LOCATION}hosts_backup-{datetime.now().strftime("%Y%m%d")}'
 #Try to backup to System32\etc\drivers
