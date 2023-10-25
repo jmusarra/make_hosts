@@ -7,6 +7,13 @@ Only rows with both DEVICE ID and IP ADDRESS will be written to hosts file. If
 either of those columns are mising data, that row will be ignored.
 '''
 # pandas is a python data analysis and manipulation library - https://pandas.pydata.org/
+
+__author__ = "John Musarra"
+__license__ = "MIT"
+__email__ = "john@mightymu.net"
+__maintainer__ = "John Musarra"
+__version__ = "alpha"
+
 import sys
 import os
 import time
