@@ -12,8 +12,7 @@ __author__ = "John Musarra"
 __license__ = "MIT"
 __email__ = "john@mightymu.net"
 __maintainer__ = "John Musarra"
-__version__ = "alpha"
-
+__version__ = "testing"
 import sys
 import os
 import time
@@ -43,8 +42,8 @@ if os.path.isfile(ip_doc_source):
 # this is becoming a horrible mess ☹️ and I'm making it worse and worse ☹️☹️☹️
 HOSTS_FILE_BACKUP_LOCATION = 'C:\\Windows\\System32\\drivers\\etc\\'
 HOSTS_FILE_BACKUP_PATH = f'{HOSTS_FILE_BACKUP_LOCATION}hosts_backup-{datetime.now().strftime("%Y%m%d")}'
-#Try to backup to System32\etc\drivers
 
+#Try to backup to System32\etc\drivers
 def copy_with_powershell(source, destination):
     '''
     copy source to destination using Powershell
